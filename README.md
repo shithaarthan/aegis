@@ -15,15 +15,16 @@ One product, two editions, every deployment target. Open-source core (MIT).
 ## Quickstart (Agent)
 
 ```sh
-npx aegis init        # 3 questions → .aegis/config.yml + workflow
-aegis run --self-test # synthetic incident proves the wiring
+git clone <repo-url> && cd aegis && pnpm install && pnpm build
+pnpm aegis init        # 3 questions → .aegis/config.yml + workflow
+pnpm aegis run --self-test  # synthetic incident proves the wiring
 ```
 
 ## Quickstart (Live)
 
 ```sh
 curl -fsSL https://example.com/aegis.sh | sh
-aegis attach /srv/my-app
+pnpm aegis attach /srv/my-app
 ```
 
 ## Layout

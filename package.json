@@ -6,11 +6,12 @@
   "packageManager": "pnpm@10.13.1",
   "engines": { "node": ">=22" },
   "scripts": {
+    "aegis": "node packages/core/dist/cli.js",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "demo:phase0": "pnpm --filter @aegis/core demo:phase0"
+    "demo:phase0": "pnpm --filter @aegis/core exec tsx ./scripts/demo-phase0.ts"
   },
   "devDependencies": {
     "turbo": "^2.5.4",
