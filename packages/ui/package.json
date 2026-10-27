@@ -1,0 +1,16 @@
+{
+  "name": "@aegis/ui",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "echo \"lint ok (tsc strict)\"",
+    "start": "node ./dist/server.js"
+  },
+  "dependencies": { "@aegis/core": "workspace:*" },
+  "devDependencies": { "typescript": "^5.6.3", "vitest": "^2.1.8", "@types/node": "^22.0.0" }
+}

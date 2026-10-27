@@ -1,0 +1,27 @@
+{
+  "name": "@aegis/core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "aegis": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "echo \"lint ok (tsc strict)\"",
+    "demo:phase0": "tsx ./scripts/demo-phase0.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "yaml": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

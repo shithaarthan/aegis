@@ -1,0 +1,36 @@
+name: aegis-incident
+on:
+  repository_dispatch:
+    types: [aegis-incident]
+  workflow_dispatch:
+    inputs:
+      stack:
+        description: "Path to a file containing a stack trace (manual testing)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        working-directory: ${{ github.workspace }}/vendor/aegis
+        # If AEGIS is installed from npm, replace with: npm i -g aegis
+      - name: Run AEGIS pipeline (sandbox = this runner; no production secrets)
+        env:
+          AEGIS_PI_MODEL: ${{ secrets.AEGIS_MODEL }}
+        run: |
+          node vendor/aegis/packages/core/dist/cli.js run ${{ inputs.stack && format('--stack {0}', inputs.stack) || '--self-test' }}

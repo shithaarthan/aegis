@@ -1,0 +1,11 @@
+aegis-incident:
+  image: node:22
+  timeout: 25m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+  script:
+    - corepack enable && corepack prepare pnpm@10 --activate
+    - pnpm install --frozen-lockfile --dir vendor/aegis
+    - node vendor/aegis/packages/core/dist/cli.js run --self-test
+  variables:
+    GIT_STRATEGY: clone

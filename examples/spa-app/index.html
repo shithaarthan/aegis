@@ -1,0 +1,10 @@
+<!doctype html>
+<html><body>
+<div id="app">loading…</div>
+<script>
+// Seeded bad-state fault (HTTP 200): renders empty cart as if loaded.
+window.__AEGIS_SEED__ = { status: 200, body: { cart: null, loaded: true } };
+document.getElementById("app").textContent =
+  window.__AEGIS_SEED__.body.cart === null ? "Your cart (loaded): nothing — BUG" : "ok";
+</script>
+</body></html>

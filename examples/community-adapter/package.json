@@ -1,0 +1,10 @@
+{
+  "name": "community-datadog-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Third-party Detect adapter for Datadog (P5-T07) — built from docs/extension-api.md alone",
+  "type": "module",
+  "scripts": { "test": "vitest run" },
+  "dependencies": { "@aegis/core": "workspace:*" },
+  "devDependencies": { "vitest": "^2.1.8", "typescript": "^5.6.3", "@types/node": "^22.0.0" }
+}

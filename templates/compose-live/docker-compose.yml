@@ -1,0 +1,18 @@
+services:
+  aegis-daemon:
+    build: .
+    container_name: aegis-daemon
+    restart: unless-stopped
+    environment:
+      AEGIS_APP: ${AEGIS_APP:-app}
+      # Model keys ONLY via environment/CI secrets. Never bake them into the image.
+      # AEGIS_PI_MODEL: ${AEGIS_MODEL:-}
+    volumes:
+      - ${APP_DIR:-../app}:/app:ro
+      - aegis-state:/aegis-state
+    ports:
+      - "${AEGIS_UI_PORT:-8178}:8178"
+    command: ["node", "/aegis/packages/core/dist/cli.js", "run", "--self-test"]
+
+volumes:
+  aegis-state:
