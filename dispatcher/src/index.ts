@@ -7,6 +7,10 @@ export interface DispatchEnv {
   SENTRY_WEBHOOK_SECRET: string;
   GITHUB_TOKEN: string;
   GITHUB_REPO: string; // "owner/repo"
+  /** Opt-in hosted mode (P5-T04): when set, dispatches go to the managed
+   *  endpoint instead of GitHub directly. Off by default (self-hosted). */
+  AEGIS_HOSTED_MODE?: string;
+  AEGIS_HOSTED_URL?: string;
 }
 
 export interface NormalizedDispatch {
@@ -66,6 +70,22 @@ export async function decideDispatch(args: {
   return { incidentFingerprint: key, dedupeKey: key, dispatched: true, reason: "valid + novel — dispatch to GitHub Actions" };
 }
 
+/** Opt-in hosted path (P5-T04): same normalized incident, managed endpoint. */
+export function hostedDispatchRequest(hostedUrl: string, payload: { fingerprint: string; raw: string }): { url: string; init: RequestInit } {
+  return {
+    url: `${hostedUrl.replace(/\/$/, "")}/v1/incidents`,
+    init: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "aegis-dispatcher", ...payload }),
+    },
+  };
+}
+
+function isHosted(env: DispatchEnv): boolean {
+  return env.AEGIS_HOSTED_MODE === "1" && (env.AEGIS_HOSTED_URL ?? "").length > 0;
+}
+
 export function githubDispatchRequest(repo: string, payload: { fingerprint: string; raw: string }): { url: string; init: RequestInit } {
   return {
     url: `https://api.github.com/repos/${repo}/dispatches`,
@@ -96,6 +116,15 @@ export default {
       secret: env.SENTRY_WEBHOOK_SECRET,
     });
     if (!d.dispatched) return Response.json(d, { status: d.reason.includes("signature") ? 401 : 202 });
+    // Opt-in hosted path (P5-T04): same normalized incident, managed endpoint.
+    if (isHosted(env)) {
+      const { url: hostedUrl, init } = hostedDispatchRequest(env.AEGIS_HOSTED_URL as string, {
+        fingerprint: d.incidentFingerprint,
+        raw: rawBody.slice(0, 20000),
+      });
+      const res = await fetch(hostedUrl, init);
+      return Response.json({ ...d, hosted: true, hostedStatus: res.status }, { status: res.ok ? 202 : 502 });
+    }
     const { url: dispatchUrl, init } = githubDispatchRequest(env.GITHUB_REPO, { fingerprint: d.incidentFingerprint, raw: rawBody.slice(0, 20000) });
     const authed: RequestInit = {
       ...init,
